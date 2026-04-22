@@ -84,6 +84,7 @@ I hope you enjoy your Neovim journey,
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
+-- vim.env.CC = "clang"
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -478,6 +479,14 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sn', function() builtin.find_files { cwd = vim.fn.stdpath 'config' } end, { desc = '[S]earch [N]eovim files' })
     end,
   },
+  {
+    "seblyng/roslyn.nvim",
+    ---@module 'roslyn.config'
+    ---@type RoslynNvimConfig
+    opts = {
+        -- your configuration comes here; leave empty for default settings
+    },
+  },
 
   -- LSP Plugins
   {
@@ -492,7 +501,12 @@ require('lazy').setup({
         ---@module 'mason.settings'
         ---@type MasonSettings
         ---@diagnostic disable-next-line: missing-fields
-        opts = {},
+        opts = {
+          registries = {
+              "github:mason-org/mason-registry",
+              "github:Crashdummyy/mason-registry",
+          },
+        },
       },
       -- Maps LSP server names between nvim-lspconfig and Mason package names.
       'mason-org/mason-lspconfig.nvim',
@@ -613,6 +627,18 @@ require('lazy').setup({
 
         stylua = {}, -- Used to format Lua code
 
+        roslyn = {
+          cmd = { "roslyn", "--stdio"},
+          filewatching = "roslyn",
+          broad_search = true,
+          filetypes = { "cs", "razor" },
+          settings = {
+            ['csharp|background_analysis'] = {
+              dotnet_analyzer_diagnostics_scope = 'fullSolution',
+              dotnet_compiler_diagnostics_scope = 'fullSolution',
+            },
+          },
+        },
         -- Special Lua Config, as recommended by neovim help docs
         lua_ls = {
           on_init = function(client)
@@ -951,7 +977,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommended keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
